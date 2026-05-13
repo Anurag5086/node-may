@@ -35,5 +35,5 @@ exports.createBlog = (req, res) => {
 
     console.log(blogData)
 
-    res.status(201).json({success: true, message: "Blog created successfully!", newBlog})
+    res.status(201).json({success: true, message: "Blog created successfully!"})
 }
