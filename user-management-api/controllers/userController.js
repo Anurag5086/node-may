@@ -61,3 +61,53 @@ exports.loginuser = async (req, res) => {
     }
 }
 
+exports.getUser = async (req, res) => {
+    try{
+        const userId = req.user.userId
+
+        const user = await User.findById(userId).select('-password')
+
+        if(!user){
+            res.status(400).json({ success: false, message: "User not found!"})
+        }
+
+        res.status(200).json({ success: true, message: "User fetched successfully!", user})
+    }catch(err){
+        res.status(500).json({success: false, message: "Internal Server Error!"})
+    }
+}
+
+exports.updateUser = async (req, res) => {
+    try{
+        const userId = req.user.userId
+
+        const user = await User.findById(userId)
+        if(!user){
+            res.status(400).json({ success: false, message: "User not found!"})
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true })
+
+        res.status(200).json({ success: true, message: "User updated successfully!", updatedUser})
+    }catch(err){
+        res.status(500).json({success: false, message: "Internal Server Error!"})
+    }
+}
+
+exports.deleteUser = async (req, res) => {
+    try{
+        const userId = req.user.userId
+
+        const user = await User.findById(userId)
+        if(!user){
+            res.status(400).json({ success: false, message: "User not found!"})
+        }
+
+        await User.findByIdAndDelete(userId)
+
+        res.status(200).json({ success: true, message: "User deleted successfully!"})
+    }catch(err){
+        res.status(500).json({success: false, message: "Internal Server Error!"})
+    }
+}
+
