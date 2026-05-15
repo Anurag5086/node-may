@@ -1,13 +1,23 @@
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Joi = require('joi')
 
 exports.registerUser = async (req, res) => {
     try{
         const { name, email, password } = req.body;
 
-        if(!name || !email || !password){
-            res.status(400).json({success: false, message: "All fields required!"})
+        const schema = Joi.object({
+            name: Joi.string().min(3).max(50).required(),
+            email: Joi.string().email().required(),
+            password: Joi.string().regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/').required(),
+        });
+
+        const { error } = schema.validate({
+            name, email, password
+        })
+        if(error){
+            res.status(400).json({success: false, message: "Please send fields in correct format!", error})
         }
 
         let user = await User.findOne({email})
